@@ -13,7 +13,7 @@ dofile(lfs.writedir() .. "Config\\mdc.lua")
 
 local http = require("socket.http")
 
-local num_scripts = 5
+local num_scripts = 6
 
 local copyScripts = function()
 	net.log("MDC - Installing kneeboard scripts")
@@ -44,6 +44,7 @@ end
 
 mdc.onMissionLoadEnd = function()
 	net.log("MDC - onMissionLoadEnd")
+
 	if DCS.isMultiplayer() then
 		copyScripts()
 	else
@@ -67,18 +68,6 @@ mdc.onPlayerChangeSlot = function(id)
 		net.log("MDC - unit: "  .. tostring(unit))
 		lastchange = DCS.getRealTime()
 		downloadData()
-	end
-end
-
-mdc.onSimulationFrame = function()
-	if lastchange == 0 then
-		return
-	end
-	local deltat = DCS.getRealTime() - lastchange
-	if deltat > 5 then
-		local data = mission..";"..unit
-		net.log("MDC - Player data: "..data)
-		lastchange = 0
 	end
 end
 
