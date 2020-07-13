@@ -9,7 +9,6 @@ local previousExports = {
 }
 
 local buttons = {
-
 	-- A-10C
 	CDU_LSK_3L = { 9, 3001 },
 	CDU_LSK_5L = { 9, 3002 },
