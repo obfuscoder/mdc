@@ -89,4 +89,57 @@ function headline(row, text)
 	multicell(row, 0, row, columns-1, text, BOLD_FONT, GREY)
 end
 
+function texture_box(UL_X, UL_Y, W, H)
+	local UL_X = UL_X or 0
+	local UL_Y = UL_Y or 0
+	local W = W or 1
+	local H = H or 1
+	return  {
+		{ UL_X, UL_Y },
+		{ UL_X + W, UL_Y },
+		{ UL_X + W, UL_Y + H },
+		{ UL_X, UL_Y + H }
+	}
+end
+
+function image(path, UL_X, UL_Y, W, H, tx_ULX, tx_ULY, tx_W, tx_H)
+	local USER_PICTURE = MakeMaterial(path, { 255, 255, 255, 255 })
+	local width = W
+	local height = H
+
+	if width == nil then
+   		width = 2
+	end
+
+	if height == nil then
+   		height =  2 * GetAspect()
+	end
+
+	local UL_X = UL_X or 0
+	local UL_Y = UL_Y or 0
+
+	local back = CreateElement "ceTexPoly"
+	back.name = create_guid_string()
+	back.material = USER_PICTURE
+	back.init_pos = { UL_X - 1, GetAspect() - UL_Y }
+	back.vertices = {
+		{ 0, 0 },
+		{ width, 0 },
+		{ width, -height },
+		{ 0, -height }
+	}
+	back.indices = { 0, 1, 2; 0, 2, 3 }
+	back.tex_coords = texture_box(tx_ULX, tx_ULY, tx_W, tx_H)
+	back.h_clip_relation = h_clip_relations.COMPARE
+	back.level = DEFAULT_LEVEL
+	Add(back)
+end
+
+function plate(path)
+	image(path, 0, 0,
+	1.35 * GetAspect(), -- horizontal size
+	2 * GetAspect(), --vertical size
+	0, 0, 1, 1)
+end
+
 bg(-HEIGHT, -WIDTH, HEIGHT, WIDTH, WHITE)

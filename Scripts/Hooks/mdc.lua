@@ -13,13 +13,21 @@ dofile(lfs.writedir() .. "Config\\mdc.lua")
 
 local http = require("socket.http")
 
-local num_scripts = 6
+local num_scripts = 12
 
 local copyScripts = function()
 	net.log("MDC - Installing kneeboard scripts")
 	for i = 1, num_scripts do
-		local inFile = io.open(lfs.writedir() .. "Mods\\tech\\mdc\\kneeboard\\" .. i .. ".lua", "r")
-		local outFile = io.open(lfs.writedir() .. "KNEEBOARD\\" .. i .. ".lua", "w")
+		-- DCS uses the file "1" as default page when opening KB for the first time.
+		-- All kneeboard files in the same folder are sorted alphabetically.
+		-- To let the other pages follow the first one, we have to prepend "2"
+		local inFilePath = lfs.writedir() .. "Mods\\tech\\mdc\\kneeboard\\" .. string.format("%02d", i) .. ".lua"
+		local outFilePath = lfs.writedir() .. "KNEEBOARD\\2-" .. string.format("%02d", i) .. ".lua"
+		if i == 1 then
+			outFilePath = lfs.writedir() .. "KNEEBOARD\\1.lua"
+		end
+		local inFile = io.open(inFilePath, "r")
+		local outFile = io.open(outFilePath, "w")
 		local content = inFile:read("*all")
 		inFile:close()
 		outFile:write(content)
@@ -34,11 +42,18 @@ local deleteScripts = function()
 	end
 end
 
-local downloadData = function()
-	local outputFile = io.open(lfs.writedir() .. "Data\\mdc\\mdc.lua", "w")
-	result, code, headers = http.request(config.url)
+local downloadToFile = function(url, path)
+	net.log("MDC - downloading " .. url .. " to " .. path)
+	local outputFile = io.open(path, "w")
+	result, code, headers = http.request(url)
 	outputFile:write(result)
 	outputFile:close()
+end
+
+local downloadData = function()
+	local dataPath = lfs.writedir() .. 'Data\\mdc\\'
+	local dataFilePath = dataPath .. "mdc.lua"
+	downloadToFile(config.url, dataFilePath)
 	net.log("MDC - downloaded and installed")
 end
 
