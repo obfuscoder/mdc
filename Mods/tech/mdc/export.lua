@@ -467,7 +467,7 @@ LuaExportActivityNextEvent = function(current)
 					theRoutine = coroutine.create(programA10Flightplan)
 				end
 			elseif unit == "FA-18C_hornet" then
-				if GetDevice(0):get_argument_value(7) == 1 then -- HUD Video BIT
+				if GetDevice(0):get_argument_value(7) == 1 or GetDevice(0):get_argument_value(133) == 1 then -- HUD Video BIT or BCN
 					loadMdc()
 					theRoutine = coroutine.create(programF18Flightplan)
 				end
