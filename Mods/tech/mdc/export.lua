@@ -461,7 +461,7 @@ LuaExportActivityNextEvent = function(current)
 	if data ~= nil then
 		if theRoutine == nil then
 			unit = data.Name
-			if unit == "A-10C" then
+			if unit == "A-10C" or unit == "A-10C_2" then
 				if GetDevice(0):get_argument_value(464) == 1 then -- CDU_UNUSED-DOT
 					loadMdc()
 					theRoutine = coroutine.create(programA10Flightplan)
