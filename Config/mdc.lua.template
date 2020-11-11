@@ -1,0 +1,4 @@
+config = 
+{
+	["url"] = "https://<HOSTADDRESS>/mdc/<CALLSIGN>",
+}
