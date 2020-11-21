@@ -122,6 +122,32 @@ local buttons = {
 	ICP_DN = { 17, 3035, -1 },
 	ICP_INC = { 17, 3030 },
 	ICP_DEC = { 17, 3031 },
+
+	-- F-14B
+	RIO_CAP_BTN_1 = { 23, 3518 },
+	RIO_CAP_BTN_2 = { 23, 3519 },
+	RIO_CAP_BTN_3 = { 23, 3520 },
+	RIO_CAP_BTN_4 = { 23, 3521 },
+	RIO_CAP_BTN_5 = { 23, 3522 },
+	RIO_CAP_BTN_6 = { 23, 3523 },
+	RIO_CAP_BTN_7 = { 23, 3524 },
+	RIO_CAP_BTN_8 = { 23, 3525 },
+	RIO_CAP_BTN_9 = { 23, 3526 },
+	RIO_CAP_BTN_10 = { 23, 3527 },
+	RIO_CAP_BRG_0 = { 23, 3535 },
+	RIO_CAP_LAT_1 = { 23, 3536 },
+	RIO_CAP_NBR_2 = { 23, 3537 },
+	RIO_CAP_SPD_3 = { 23, 3538 },
+	RIO_CAP_ALT_4 = { 23, 3539 },
+	RIO_CAP_RNG_5 = { 23, 3540 },
+	RIO_CAP_LONG_6 = { 23, 3541 },
+	RIO_CAP_7 = { 23, 3542 },
+	RIO_CAP_HDG_8 = { 23, 3543 },
+	RIO_CAP_9 = { 23, 3544 },
+	RIO_CAP_SW = { 23, 3532 },
+	RIO_CAP_NE = { 23, 3533 },
+	RIO_CAP_CLEAR = { 23, 3531 },
+	RIO_CAP_ENTER = { 23, 3534 },
 }
 
 local cdu_map = {
@@ -197,6 +223,23 @@ local icp_map = {
 	["W"] = buttons.ICP_4,
 }
 
+local cap_map = {
+	["0"] = buttons.RIO_CAP_BRG_0,
+	["1"] = buttons.RIO_CAP_LAT_1,
+	["2"] = buttons.RIO_CAP_NBR_2,
+	["3"] = buttons.RIO_CAP_SPD_3,
+	["4"] = buttons.RIO_CAP_ALT_4,
+	["5"] = buttons.RIO_CAP_RNG_5,
+	["6"] = buttons.RIO_CAP_LONG_6,
+	["7"] = buttons.RIO_CAP_7,
+	["8"] = buttons.RIO_CAP_HDG_8,
+	["9"] = buttons.RIO_CAP_9,
+	["E"] = buttons.RIO_CAP_NE,
+	["N"] = buttons.RIO_CAP_NE,
+	["S"] = buttons.RIO_CAP_SW,
+	["W"] = buttons.RIO_CAP_SW,
+}
+
 local log = function(str)
 	logFile:write(str .. "\n")
 	logFile:flush()
@@ -268,6 +311,10 @@ end
 
 function charToIcpButton(char)
 	return icp_map[char]
+end
+
+function charToCapButton(char)
+	return cap_map[char]
 end
 
 function enterScratch(str)
@@ -369,6 +416,31 @@ function addIcpWaypoint(latitude, longitude, elevation, tot)
 	pushButton(buttons.ICP_INC)
 end
 
+function enterCap(str)
+	for i = 1, #str do
+		local button = charToCapButton(str:sub(i, i))
+		if button then
+			pushButton(button)
+		end
+	end
+	pushButton(buttons.RIO_CAP_ENTER)
+end
+
+function addCapWaypoint(wpButton, latitude, longitude, elevation)
+	pushButton(wpButton)
+	pushButton(buttons.RIO_CAP_CLEAR)
+	pushButton(buttons.RIO_CAP_LAT_1)
+	enterCap(latitude)
+	pushButton(buttons.RIO_CAP_CLEAR)
+	pushButton(buttons.RIO_CAP_LONG_6)
+	enterCap(longitude)
+	if elevation ~= "" then
+		pushButton(buttons.RIO_CAP_CLEAR)
+		pushButton(buttons.RIO_CAP_ALT_4)
+		enterCap(elevation)
+	end
+end
+
 programA10Flightplan = function(time)
 	log("Start programming A-10C...")
 	selectWaypointPage()
@@ -450,6 +522,29 @@ programF16Flightplan = function(time)
 	log("programming DONE!")
 end
 
+programF14Flightplan = function(time)
+	log("Start programming F-14 ...")
+
+	local wp_btn_map = {
+		[1] = buttons.RIO_CAP_BTN_1,
+		[2] = buttons.RIO_CAP_BTN_2,
+		[3] = buttons.RIO_CAP_BTN_3,
+	}
+
+	for i, wp in ipairs(mdc.waypoints) do
+		local wp_btn = wp_btn_map[i]
+		if wp_btn ~= nil then
+			log("Add Waypoint ... " .. wp.cdu)
+			local parts = {}
+			for part in string.gmatch(wp.cdu, "%S+") do
+				table.insert(parts, part)
+			end
+			addCapWaypoint(wp_btn, parts[1], parts[2], wp.alt)
+		end
+	end
+	log("programming DONE!")
+end
+
 mdc = nil
 
 function loadMdc()
@@ -457,6 +552,7 @@ function loadMdc()
 end
 
 LuaExportActivityNextEvent = function(current)
+	log("LuaExportActivityNextEvent")
 	local data = LoGetSelfData()
 	if data ~= nil then
 		if theRoutine == nil then
@@ -475,6 +571,11 @@ LuaExportActivityNextEvent = function(current)
 				if GetDevice(0):get_argument_value(187) == 1 then -- UFC FLIR WX
 					loadMdc()
 					theRoutine = coroutine.create(programF16Flightplan)
+				end
+			elseif unit == "F-14B" then
+				if GetDevice(0):get_argument_value(1814) == 1 then -- RIO_CCM_VGS
+					loadMdc()
+					theRoutine = coroutine.create(programF14Flightplan)
 				end
 			end
 		elseif coroutine.status(theRoutine) == "suspended" then
