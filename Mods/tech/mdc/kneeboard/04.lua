@@ -1,4 +1,4 @@
--- 4
+-- 04 - support
 local lfs = require('lfs')
 local dataPath = lfs.writedir() .. 'Data\\mdc\\'
 local modPath = lfs.writedir() .. 'Mods\\tech\\mdc\\'

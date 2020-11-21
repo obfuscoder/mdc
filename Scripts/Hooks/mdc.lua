@@ -13,7 +13,7 @@ dofile(lfs.writedir() .. "Config\\mdc.lua")
 
 local http = require("socket.http")
 
-local num_scripts = 12
+local num_scripts = 14
 
 local copyScripts = function()
 	net.log("MDC - Installing kneeboard scripts")

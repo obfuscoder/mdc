@@ -1,4 +1,4 @@
--- 5
+-- 06 - presets
 local lfs = require('lfs')
 local dataPath = lfs.writedir() .. 'Data\\mdc\\'
 local modPath = lfs.writedir() .. 'Mods\\tech\\mdc\\'
@@ -6,25 +6,15 @@ local modPath = lfs.writedir() .. 'Mods\\tech\\mdc\\'
 dofile(modPath..'mdc.lua')
 dofile(dataPath..'mdc.lua')
 
-headline(0, "RAMROD")
+headline(0, "PRESETS")
 
-columns = 10
-for i = 1, string.len(mdc.ramrod) do
-	head(1, i-1, i-1)
-	cell(2, i-1, string.sub(mdc.ramrod, i, i))
-end
+columns = 6
+head(1, 0, "#")
+head(1, 1, "FREQ")
+multihead(1, 2, 1, 5, "NAME")
 
-headline(3, "DRYAD")
-
-columns = 11
-head(4, 0, "")
-for i, header in ipairs(mdc.dryad.header) do
-	head(4, i, i - 1)
-end
-
-for i, row in ipairs(mdc.dryad.rows) do
-	head(4 + i, 0, row.header)
-	for j, col in ipairs(row.columns) do
-		cell(4 + i, j, col)
-	end
+for i, preset in ipairs(mdc.presets) do
+	cell(1 + i, 0, i)
+	cell(1 + i, 1, preset.freq)
+	multicell(1 + i, 2, 1 + i, 5, preset.name)
 end

@@ -1,4 +1,4 @@
--- 1
+-- 01 - lineup/loadout/procedures
 local lfs = require('lfs')
 local dataPath = lfs.writedir() .. 'Data\\mdc\\'
 local modPath = lfs.writedir() .. 'Mods\\tech\\mdc\\'

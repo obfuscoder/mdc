@@ -1,4 +1,4 @@
--- 2
+-- 02 - flight/comms plan
 local lfs = require('lfs')
 local dataPath = lfs.writedir() .. 'Data\\mdc\\'
 local modPath = lfs.writedir() .. 'Mods\\tech\\mdc\\'
