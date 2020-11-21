@@ -525,10 +525,15 @@ end
 programF14Flightplan = function(time)
 	log("Start programming F-14 ...")
 
+	-- WP1, WP2, WP3, FP, IP, ST, HB
 	local wp_btn_map = {
 		[1] = buttons.RIO_CAP_BTN_1,
 		[2] = buttons.RIO_CAP_BTN_2,
 		[3] = buttons.RIO_CAP_BTN_3,
+		[4] = buttons.RIO_CAP_BTN_4,
+		[5] = buttons.RIO_CAP_BTN_5,
+		[6] = buttons.RIO_CAP_BTN_9,
+		[7] = buttons.RIO_CAP_BTN_6,
 	}
 
 	for i, wp in ipairs(mdc.waypoints) do
