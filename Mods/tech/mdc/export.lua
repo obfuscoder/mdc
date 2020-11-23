@@ -557,7 +557,6 @@ function loadMdc()
 end
 
 LuaExportActivityNextEvent = function(current)
-	log("LuaExportActivityNextEvent")
 	local data = LoGetSelfData()
 	if data ~= nil then
 		if theRoutine == nil then
