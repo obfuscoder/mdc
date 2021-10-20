@@ -503,6 +503,7 @@ programF16Flightplan = function(time)
 	pushButton(buttons.ICP_RTN)
 	pushButton(buttons.ICP_4) -- STPT
 	pushButton(buttons.ICP_DN)
+	pushButton(buttons.ICP_DN)
 
 	for i, wp in ipairs(mdc.waypoints) do
 		log("Add Waypoint ... " .. wp.cdu)
